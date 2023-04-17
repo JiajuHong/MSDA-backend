@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiaju.project.mapper.ProjectInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.jiaju.project.model.entity.ProjectInfo">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="principal" column="principal" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="description" column="description" jdbcType="VARCHAR"/>
+            <result property="cover" column="cover" jdbcType="VARCHAR"/>
+            <result property="created_time" column="created_time" jdbcType="TIMESTAMP"/>
+            <result property="updated_time" column="updated_time" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,principal,
+        description,cover,created_time,
+        updated_time,isDelete
+    </sql>
+    <select id="selectProjectList" resultType="com.jiaju.project.model.vo.ProjectVO">
+        select b.project_id, a.`name` as title, a.principal, a.cover, a.description, b.user_name, b.avatar
+        from project_info as a left join project_member as b on a.id=b.project_id
+    </select>
+    <select id="selectLeaderList" resultType="com.jiaju.project.model.vo.LeaderVO">
+        select pro.principal as `source`, pro.`name` as `target`, count(*) as value
+        from project_info as pro
+                 INNER JOIN project_member as pm
+                            on pro.id = pm.project_id and pro.isDelete = 0 and pm.isDelete = 0
+        GROUP BY principal
+    </select>
+</mapper>

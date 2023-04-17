@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiaju.project.mapper.PressureSensorDataMapper">
+
+    <resultMap id="BaseResultMap" type="com.jiaju.project.model.entity.PressureSensorData">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="sensor_id" column="sensor_id" jdbcType="INTEGER"/>
+            <result property="pressure" column="pressure" jdbcType="DECIMAL"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,sensor_id,pressure,
+        isDelete
+    </sql>
+</mapper>
