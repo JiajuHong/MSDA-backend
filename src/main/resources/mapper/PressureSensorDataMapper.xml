@@ -8,11 +8,24 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="sensor_id" column="sensor_id" jdbcType="INTEGER"/>
             <result property="pressure" column="pressure" jdbcType="DECIMAL"/>
-            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+            <result property="measurement_time" column="measurement_time" jdbcType="TIMESTAMP"/>
+        <result property="unit" column="unit" jdbcType="VARCHAR"/>
+
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,sensor_id,pressure,
-        isDelete
+        id,sensor_id,pressure,unit, measurement_time
     </sql>
+    <select id="getPressureHistory" resultType="com.jiaju.project.model.vo.PressureVO">
+        select s.name, psd.pressure, psd.measurement_time as `time`
+        from sensor_info as s inner join pressure_sensor_data as psd
+                                         on s.id = psd.sensor_id and s.isDelete=0
+        order by `time`
+    </select>
+    <select id="getPressureRealtime" resultType="com.jiaju.project.model.vo.PressureVO">
+        select s.name, psd.pressure, psd.measurement_time as `time`
+        from sensor_info as s inner join pressure_sensor_data as psd
+                                         on s.id = psd.sensor_id and s.isDelete=0 and DATE_FORMAT(measurement_time, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+        order by `time`
+    </select>
 </mapper>

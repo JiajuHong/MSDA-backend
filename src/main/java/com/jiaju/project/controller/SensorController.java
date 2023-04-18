@@ -11,20 +11,16 @@ import com.jiaju.project.constant.CommonConstant;
 import com.jiaju.project.exception.BusinessException;
 import com.jiaju.project.mapper.ProjectInfoMapper;
 import com.jiaju.project.mapper.SensorInfoMapper;
-import com.jiaju.project.mapper.WorkGroupMapper;
 import com.jiaju.project.model.dto.senser.SensorAddRequest;
 import com.jiaju.project.model.dto.senser.SensorQueryRequest;
 import com.jiaju.project.model.dto.senser.SensorUpdateRequest;
 import com.jiaju.project.model.entity.*;
-import com.jiaju.project.model.vo.LeaderVO;
 import com.jiaju.project.model.vo.SensorVO;
 import com.jiaju.project.service.*;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.expression.DoubleValue;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
-import sun.management.Sensor;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 帖子接口
@@ -217,12 +214,27 @@ public class SensorController {
     @AuthCheck(anyRole = {"root", "admin"})
     @GetMapping("/list")
     public BaseResponse<List<SensorVO>> listSensor(SensorQueryRequest sensorQueryRequest) {
-        SensorInfo sensorQuery = new SensorInfo();
+        SensorInfo sensorInfo = new SensorInfo();
         if (sensorQueryRequest != null) {
-            BeanUtils.copyProperties(sensorQueryRequest, sensorQuery);
+            BeanUtils.copyProperties(sensorQueryRequest, sensorInfo);
         }
-        List<SensorVO> sensorInfoList = sensorInfoMapper.getSensorInfoList();
-        return ResultUtils.success(sensorInfoList);
+        QueryWrapper<SensorInfo> queryWrapper = new QueryWrapper<>(sensorInfo);
+        List<SensorInfo> sensorList = sensorInfoService.list(queryWrapper);
+        List<SensorVO> sensorVOList = sensorList.stream().map(sensor -> {
+            SensorVO sensorVO = new SensorVO();
+            QueryWrapper<StructureInfo> wrapper = new QueryWrapper<>();
+            wrapper.eq("id", sensor.getStructure_id());
+            StructureInfo structureInfo = structureInfoService.getOne(wrapper);
+            sensor.setStructure_name(structureInfo.getName());
+
+            QueryWrapper<WorkGroup> wrapper1 = new QueryWrapper<>();
+            wrapper1.eq("id", sensor.getGroup_id());
+            WorkGroup workGroup = workGroupService.getOne(wrapper1);
+            sensor.setGroup_name(workGroup.getName());
+            BeanUtils.copyProperties(sensor, sensorVO);
+            return sensorVO;
+        }).collect(Collectors.toList());
+        return ResultUtils.success(sensorVOList);
     }
 
     /**
@@ -313,7 +325,6 @@ public class SensorController {
             map1.put("count", sensorInfo.getCount());
             resultList.add(map1);
         }
-
         return resultList;
     }
     // endregion

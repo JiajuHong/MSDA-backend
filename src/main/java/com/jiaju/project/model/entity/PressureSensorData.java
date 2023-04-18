@@ -4,9 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
-import lombok.Data;
+import java.util.Date;
 
 /**
  * 压力传感器信息表
@@ -31,10 +33,10 @@ public class PressureSensorData extends SensorInfo implements Serializable {
      */
     private BigDecimal pressure;
 
-    /**
-     * 是否删除
-     */
-    private Integer isDelete;
+
+    private String unit;
+
+    private Date measurement_time;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

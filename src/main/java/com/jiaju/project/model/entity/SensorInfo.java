@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 传感器信息表
@@ -46,6 +47,9 @@ public class SensorInfo implements Serializable {
      */
     private Integer structure_id;
 
+    @TableField(exist = false)
+    private String structure_name;
+
     /**
      * 创建该记录的用户
      */
@@ -55,6 +59,9 @@ public class SensorInfo implements Serializable {
      * 传感器所属的工作组的ID，外键
      */
     private Integer group_id;
+
+    @TableField(exist = false)
+    private String group_name;
 
     /**
      * 传感器信息记录的创建时间

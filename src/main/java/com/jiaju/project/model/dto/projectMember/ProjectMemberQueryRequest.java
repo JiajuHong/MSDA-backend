@@ -17,7 +17,7 @@ public class ProjectMemberQueryRequest extends PageRequest implements Serializab
     /**
      * 项目ID，外键
      */
-    private Integer project_id;
+    private String project_name;
 
     /**
      * 项目成员名称

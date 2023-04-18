@@ -18,6 +18,7 @@ import com.jiaju.project.model.entity.ProjectInfo;
 import com.jiaju.project.model.entity.ProjectMember;
 import com.jiaju.project.model.entity.User;
 import com.jiaju.project.model.vo.ProjectMemberVO;
+import com.jiaju.project.service.ProjectInfoService;
 import com.jiaju.project.service.ProjectMemberService;
 import com.jiaju.project.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 帖子接口
@@ -51,6 +53,8 @@ public class ProjectMemberController {
     @Resource
     private ProjectMemberMapper projectMemberMapper;
 
+    @Resource
+    private ProjectInfoService projectInfoService;
     // region 增删改查
 
     /**
@@ -179,8 +183,18 @@ public class ProjectMemberController {
         if (projectMemberQueryRequest != null) {
             BeanUtils.copyProperties(projectMemberQueryRequest, projectMemberQuery);
         }
-        List<ProjectMemberVO> projectMemberList = projectMemberMapper.queryProjectMemberList();
-        return ResultUtils.success(projectMemberList);
+        QueryWrapper<ProjectMember> wrapper = new QueryWrapper<>(projectMemberQuery);
+        List<ProjectMember> memberList = projectMemberService.list(wrapper);
+        List<ProjectMemberVO> memberVOS = memberList.stream().map(projectMember -> {
+            ProjectMemberVO projectMemberVO = new ProjectMemberVO();
+            QueryWrapper<ProjectInfo> wrapper1 = new QueryWrapper<>();
+            wrapper1.eq("id", projectMember.getProject_id());
+            ProjectInfo projectInfo = projectInfoMapper.selectOne(wrapper1);
+            projectMember.setProject_name(projectInfo.getName());
+            BeanUtils.copyProperties(projectMember, projectMemberVO);
+            return projectMemberVO;
+        }).collect(Collectors.toList());
+        return ResultUtils.success(memberVOS);
     }
 
     /**

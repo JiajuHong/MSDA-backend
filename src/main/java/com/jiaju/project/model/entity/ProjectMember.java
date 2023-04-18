@@ -4,9 +4,10 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-import lombok.Data;
 
 /**
  * 项目成员表
@@ -25,6 +26,9 @@ public class ProjectMember implements Serializable {
      * 项目ID，外键
      */
     private Integer project_id;
+
+    @TableField(exist = false)
+    private String project_name;
 
     /**
      * 项目成员名称

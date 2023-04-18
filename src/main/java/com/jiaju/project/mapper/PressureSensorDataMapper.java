@@ -1,7 +1,10 @@
 package com.jiaju.project.mapper;
 
-import com.jiaju.project.model.entity.PressureSensorData;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jiaju.project.model.entity.PressureSensorData;
+import com.jiaju.project.model.vo.PressureVO;
+
+import java.util.List;
 
 /**
 * @author jiaju
@@ -10,6 +13,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.jiaju.project.model.entity.PressureSensorData
 */
 public interface PressureSensorDataMapper extends BaseMapper<PressureSensorData> {
+
+    List<PressureVO> getPressureHistory();
+
+    List<PressureVO> getPressureRealtime();
 
 }
 
