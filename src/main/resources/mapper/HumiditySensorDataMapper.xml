@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jiaju.project.mapper.HumiditySensorDataMapper">
+
+    <resultMap id="BaseResultMap" type="com.jiaju.project.model.entity.HumiditySensorData">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="sensor_id" column="sensor_id" jdbcType="INTEGER"/>
+            <result property="humidity" column="humidity" jdbcType="FLOAT"/>
+            <result property="unit" column="unit" jdbcType="VARCHAR"/>
+            <result property="measurement_time" column="measurement_time" jdbcType="TIMESTAMP"/>
+            <result property="isDelete" column="isDelete" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,sensor_id,humidity,
+        unit,measurement_time,isDelete
+    </sql>
+    <select id="getHumidityRealtime" resultType="com.jiaju.project.model.vo.HumidityVO">
+        select s.name, h.humidity, h.measurement_time as `date`
+        from sensor_info as s
+                 inner join humidity_sensor_data as h
+                            on s.id = h.sensor_id and s.isDelete = 0
+                                and DATE_FORMAT(measurement_time, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+        order by `date`
+    </select>
+    <select id="getHumidityHistory" resultType="com.jiaju.project.model.vo.HumidityVO">
+        select s.name, h.humidity, h.measurement_time as `date`
+        from sensor_info as s
+                 inner join humidity_sensor_data as h
+                            on s.id = h.sensor_id and s.isDelete = 0
+        order by `date`
+    </select>
+</mapper>
