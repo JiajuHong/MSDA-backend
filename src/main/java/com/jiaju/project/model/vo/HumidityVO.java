@@ -10,9 +10,9 @@ import java.io.Serializable;
  * @TableName user
  */
 @Data
-public class InfraredVO implements Serializable {
+public class HumidityVO implements Serializable {
     private String name;
-    private Integer distance;
+    private Float humidity;
     private String date;
     private static final long serialVersionUID = 1L;
 }

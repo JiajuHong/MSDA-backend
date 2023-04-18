@@ -105,6 +105,19 @@ CREATE TABLE water_level_sensor_data
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='水位传感器信息表';
 
+-- 湿度传感器表
+CREATE TABLE temperature_sensor_data
+(
+    id              INT PRIMARY KEY AUTO_INCREMENT,
+    sensor_id       INT                                 NOT NULL COMMENT '传感器ID，外键',
+    humidity        FLOAT                              NOT NULL COMMENT '温度值',
+    unit             VARCHAR(10)                         NOT NULL COMMENT '湿度单位',
+    measurement_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '测量时间',
+    isDelete         tinyint   DEFAULT 0                 NOT NULL COMMENT '是否删除',
+    CONSTRAINT fk_temperature_sensor_id FOREIGN KEY (sensor_id) REFERENCES sensor_info (id)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='湿度传感器数据表';
+
 -- 项目表
 CREATE TABLE project_info
 (

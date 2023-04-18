@@ -1,6 +1,8 @@
 package com.jiaju.project.controller;
 
+import com.jiaju.project.mapper.HumiditySensorDataMapper;
 import com.jiaju.project.mapper.TemperatureSensorDataMapper;
+import com.jiaju.project.model.vo.HumidityVO;
 import com.jiaju.project.model.vo.TemperatureVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +25,9 @@ public class ChartsController {
     @Resource
     private TemperatureSensorDataMapper temperatureSensorDataMapper;
 
+    @Resource
+    private HumiditySensorDataMapper humiditySensorDataMapper;
+
 
     @GetMapping("/history/temperature")
     public List<TemperatureVO> temperatureHistory() {
@@ -32,6 +37,16 @@ public class ChartsController {
     @GetMapping("/realtime/temperature")
     public List<TemperatureVO> temperatureRealtime() {
         return temperatureSensorDataMapper.getTemperatureRealtime();
+    }
+
+    @GetMapping("/realtime/humidity")
+    public List<HumidityVO> humidityRealtime() {
+        return humiditySensorDataMapper.getHumidityRealtime();
+    }
+
+    @GetMapping("/history/humidity")
+    public List<HumidityVO> humidityHistory() {
+        return humiditySensorDataMapper.getHumidityHistory();
     }
 
     // endregion
