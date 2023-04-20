@@ -184,6 +184,16 @@ public class ProjectMemberController {
             BeanUtils.copyProperties(projectMemberQueryRequest, projectMemberQuery);
         }
         QueryWrapper<ProjectMember> wrapper = new QueryWrapper<>(projectMemberQuery);
+        // 如果查询条件中包含 project_name，则需要先查询 project_info 表，再根据查询结果中的 id 查询 project_member 表
+        if (StringUtils.isNotBlank(projectMemberQuery.getProject_name())) {
+            QueryWrapper<ProjectInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("name", projectMemberQuery.getProject_name());
+            ProjectInfo projectInfo = projectInfoMapper.selectOne(queryWrapper);
+            if (projectInfo == null) {
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
+            }
+            wrapper.eq("project_id", projectInfo.getId());
+        }
         List<ProjectMember> memberList = projectMemberService.list(wrapper);
         List<ProjectMemberVO> memberVOS = memberList.stream().map(projectMember -> {
             ProjectMemberVO projectMemberVO = new ProjectMemberVO();

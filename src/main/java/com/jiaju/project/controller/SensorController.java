@@ -219,6 +219,26 @@ public class SensorController {
             BeanUtils.copyProperties(sensorQueryRequest, sensorInfo);
         }
         QueryWrapper<SensorInfo> queryWrapper = new QueryWrapper<>(sensorInfo);
+        // 如果查询条件中包含结构物名称，则需要先查询结构物信息，再根据结构物 id 查询传感器信息
+        if (StringUtils.isNotBlank(sensorInfo.getStructure_name())) {
+            QueryWrapper<StructureInfo> wrapper = new QueryWrapper<>();
+            wrapper.eq("name", sensorInfo.getStructure_name());
+            StructureInfo structureInfo = structureInfoService.getOne(wrapper);
+            if (structureInfo == null) {
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到该结构物");
+            }
+            queryWrapper.eq("structure_id", structureInfo.getId());
+        }
+        // 如果查询条件中包含工作组名称，则需要先查询工作组信息，再根据工作组 id 查询传感器信息
+        if (StringUtils.isNotBlank(sensorInfo.getGroup_name())) {
+            QueryWrapper<WorkGroup> wrapper = new QueryWrapper<>();
+            wrapper.eq("name", sensorInfo.getGroup_name());
+            WorkGroup workGroup = workGroupService.getOne(wrapper);
+            if (workGroup == null) {
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到该工作组");
+            }
+            queryWrapper.eq("group_id", workGroup.getId());
+        }
         List<SensorInfo> sensorList = sensorInfoService.list(queryWrapper);
         List<SensorVO> sensorVOList = sensorList.stream().map(sensor -> {
             SensorVO sensorVO = new SensorVO();
