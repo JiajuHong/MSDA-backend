@@ -55,7 +55,6 @@ public class UserQueryRequest extends PageRequest implements Serializable {
      */
     private Date updateTime;
 
-    private String company;
 
     private String workGroup;
 

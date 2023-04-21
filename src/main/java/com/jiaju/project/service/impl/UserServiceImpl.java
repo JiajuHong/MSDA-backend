@@ -2,8 +2,8 @@ package com.jiaju.project.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jiaju.project.constant.UserConstant;
 import com.jiaju.project.common.ErrorCode;
+import com.jiaju.project.constant.UserConstant;
 import com.jiaju.project.exception.BusinessException;
 import com.jiaju.project.mapper.UserMapper;
 import com.jiaju.project.mapper.WorkGroupMapper;
@@ -176,9 +176,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         if (StringUtils.isNotBlank(user.getUserRole())) {
             userToUpdate.setUserRole(user.getUserRole());
         }
-        if (StringUtils.isNotBlank(user.getCompany())) {
-            userToUpdate.setCompany(user.getCompany());
-        }
         if (StringUtils.isNotBlank(user.getWorkGroup())) {
             userToUpdate.setWorkGroup(user.getWorkGroup());
             QueryWrapper<WorkGroup> queryWrapper = new QueryWrapper<>();
@@ -214,7 +211,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             userToAdd.setUserPassword(encryptPassword);
             userToAdd.setGender(user.getGender());
             userToAdd.setUserRole(user.getUserRole());
-            userToAdd.setCompany(user.getCompany());
             userToAdd.setWorkGroup(user.getWorkGroup());
             boolean saveResult = this.save(userToAdd);
             if (!saveResult) {

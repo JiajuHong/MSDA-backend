@@ -42,7 +42,6 @@ public class UserAddRequest implements Serializable {
      */
     private String userPassword;
 
-    private String company;
 
     private String workGroup;
 

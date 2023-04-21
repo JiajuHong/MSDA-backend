@@ -347,5 +347,50 @@ public class SensorController {
         }
         return resultList;
     }
+
+    @GetMapping("/list/MyGroupSensor")
+    public BaseResponse<List<SensorVO>> listMyGroupSensor(SensorQueryRequest sensorQueryRequest, HttpServletRequest request) {
+        SensorInfo sensorInfo = new SensorInfo();
+        if (sensorQueryRequest != null) {
+            BeanUtils.copyProperties(sensorQueryRequest, sensorInfo);
+        }
+        User user = userService.getLoginUser(request);
+        String groupName = user.getWorkGroup();
+        QueryWrapper<WorkGroup> wrapper2 = new QueryWrapper<>();
+        wrapper2.eq("name", groupName);
+        WorkGroup group = workGroupService.getOne(wrapper2);
+        if ( group == null) {
+            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到该组");
+        }
+        sensorInfo.setGroup_id(group.getId());
+        QueryWrapper<SensorInfo> queryWrapper = new QueryWrapper<>(sensorInfo);
+        // 如果查询条件中包含结构物名称，则需要先查询结构物信息，再根据结构物 id 查询传感器信息
+        if (StringUtils.isNotBlank(sensorInfo.getStructure_name())) {
+            QueryWrapper<StructureInfo> wrapper = new QueryWrapper<>();
+            wrapper.eq("name", sensorInfo.getStructure_name());
+            StructureInfo structureInfo = structureInfoService.getOne(wrapper);
+            if (structureInfo == null) {
+                throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "未找到该结构物");
+            }
+            queryWrapper.eq("structure_id", structureInfo.getId());
+        }
+        List<SensorInfo> sensorList = sensorInfoService.list(queryWrapper);
+        List<SensorVO> sensorVOList = sensorList.stream().map(sensor -> {
+            SensorVO sensorVO = new SensorVO();
+            QueryWrapper<StructureInfo> wrapper = new QueryWrapper<>();
+            wrapper.eq("id", sensor.getStructure_id());
+            StructureInfo structureInfo = structureInfoService.getOne(wrapper);
+            sensor.setStructure_name(structureInfo.getName());
+
+            QueryWrapper<WorkGroup> wrapper1 = new QueryWrapper<>();
+            wrapper1.eq("id", sensor.getGroup_id());
+            WorkGroup workGroup = workGroupService.getOne(wrapper1);
+            sensor.setGroup_name(workGroup.getName());
+            BeanUtils.copyProperties(sensor, sensorVO);
+            return sensorVO;
+        }).collect(Collectors.toList());
+        return ResultUtils.success(sensorVOList);
+    }
+
     // endregion
 }

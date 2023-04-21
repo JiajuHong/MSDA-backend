@@ -47,8 +47,6 @@ public class UserUpdateRequest implements Serializable {
      */
     private String userPassword;
 
-    private String company;
-
     private String workGroup;
 
     @TableField(exist = false)

@@ -14,8 +14,8 @@ import com.jiaju.project.model.dto.group.WorkGroupAddRequest;
 import com.jiaju.project.model.dto.group.WorkGroupQueryRequest;
 import com.jiaju.project.model.dto.group.WorkGroupUpdateRequest;
 import com.jiaju.project.model.entity.User;
-import com.jiaju.project.service.UserService;
 import com.jiaju.project.model.entity.WorkGroup;
+import com.jiaju.project.service.UserService;
 import com.jiaju.project.service.WorkGroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -59,15 +59,6 @@ public class GroupController {
         if (groupAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        String admin = groupAddRequest.getAdmin();
-        String userAccount = groupAddRequest.getAdmin();
-        // 使用QueryWrapper根据userAccount查询用户是否存在
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
-        User user = userMapper.selectOne(queryWrapper);
-        if (user == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
-        }
         WorkGroup group = new WorkGroup();
         BeanUtils.copyProperties(groupAddRequest, group);
         // 校验
@@ -76,13 +67,6 @@ public class GroupController {
         if (!userService.isRoot(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
-        QueryWrapper<WorkGroup> queryWrapper1 = new QueryWrapper<>();
-        queryWrapper1.eq("admin", groupAddRequest.getAdmin());
-        WorkGroup oldWorkGroup = groupService.getOne(queryWrapper1);
-        if (oldWorkGroup != null) {
-            throw new BusinessException(ErrorCode.RECORD_EXIST_ERROR);
-        }
-        group.setAdmin(groupAddRequest.getAdmin());
         boolean result = groupService.save(group);
         if (!result) {
             throw new BusinessException(ErrorCode.OPERATION_ERROR);
@@ -131,15 +115,6 @@ public class GroupController {
         if (groupUpdateRequest == null || groupUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-
-        String userAccount = groupUpdateRequest.getAdmin();
-        // 使用QueryWrapper根据userAccount查询用户是否存在
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("userAccount", userAccount);
-        User admin = userMapper.selectOne(queryWrapper);
-        if (admin == null) {
-            throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "管理员不存在");
-        }
         WorkGroup group = new WorkGroup();
         BeanUtils.copyProperties(groupUpdateRequest, group);
         groupService.validWorkGroup(group, false);
@@ -150,8 +125,8 @@ public class GroupController {
         if (oldWorkGroup == null) {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR, "工作组不存在");
         }
-        // 仅本组管理员或超级管理员可修改
-        if (!oldWorkGroup.getAdmin().equals(user.getId()) && !userService.isRoot(request)) {
+        // 仅超级管理员可修改
+        if (!userService.isRoot(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean result = groupService.updateById(group);

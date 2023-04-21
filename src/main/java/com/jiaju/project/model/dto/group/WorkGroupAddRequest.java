@@ -17,11 +17,5 @@ public class WorkGroupAddRequest implements Serializable {
      */
     private String name;
 
-    /**
-     * 组管理员
-     */
-
-    private String admin;
-
     private static final long serialVersionUID = 1L;
 }

@@ -4,8 +4,6 @@ import com.jiaju.project.model.entity.WorkGroup;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Date;
-
 /**
  * 帖子视图
  *
@@ -16,8 +14,6 @@ import java.util.Date;
 @Data
 public class GroupVO extends WorkGroup {
     private String name;
-
-    private String admin;
 
     private static final long serialVersionUID = 1L;
 }
