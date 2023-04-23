@@ -131,7 +131,7 @@ public class SensorController {
             throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);
         }
         // 仅本人或管理员可删除
-        if (!oldSensor.getCreated_by().equals(user.getUserAccount()) && !userService.isAdmin(request)) {
+        if (!oldSensor.getCreated_by().equals(user.getUserAccount()) && !userService.isAdmin(request) && !userService.isRoot(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean b = sensorInfoService.removeById(id);
@@ -184,7 +184,7 @@ public class SensorController {
         sensor.setGroup_id(workGroup.getId());
 
         // 仅本人或管理员可修改
-        if (!oldSensor.getCreated_by().equals(user.getUserAccount()) && !userService.isAdmin(request)) {
+        if (!oldSensor.getCreated_by().equals(user.getUserAccount()) && !userService.isAdmin(request) && !userService.isRoot(request)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
         boolean result = sensorInfoService.updateById(sensor);
@@ -286,7 +286,7 @@ public class SensorController {
         return ResultUtils.success(sensorPage);
     }
 
-    @GetMapping("/list/locationType")
+    @GetMapping("/list/type")
     public BaseResponse<Map<String, Object>> listSensorByLocationType() {
         QueryWrapper<SensorInfo> wrapper = new QueryWrapper<>();
         wrapper.groupBy( "type");
@@ -302,11 +302,10 @@ public class SensorController {
         }
         Map<String, Object> map = new HashMap<>();
         map.put("pie", resultList);
-
         return ResultUtils.success(map);
     }
 
-    @GetMapping("/welcome")
+    @GetMapping("/data-overview")
     public HashMap<String, Object> welcome() {
         HashMap<String, Object> map = new HashMap<>();
         QueryWrapper<SensorInfo> wrapper = new QueryWrapper<>();
